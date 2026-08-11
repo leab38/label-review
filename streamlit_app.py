@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from io import StringIO
+from paddleocr import PaddleOCR
 
 # import read_form_paddleocr
 sample_file = 'label images/sample_label_form.csv'
