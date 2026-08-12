@@ -1,8 +1,9 @@
 # from argparse import ArgumentParser
 import sys
 import streamlit as st
-
+import numpy as np
 from paddleocr import PaddleOCR
+from PIL import Image
 import pandas as pd
 from sys import stderr
 
@@ -31,15 +32,22 @@ def build_requirements_dict(product,data):
     if product.lower() == 'wine':
         requirements_dict['GRAPE_VARIETAL']=[requirements_df.iloc[0]['GRAPE_VARIETAL']]
         requirements_dict['WINE_APPELLATION']=[requirements_df.iloc[0]['WINE_APPELLATION']]
-
-    else:
+    elif product.lower() not in ['distilled spirits','malt beverages']:
         print(f"Product type '{product}' not recognized.")
-    print(requirements_dict)
+    # print(requirements_dict)
     return requirements_dict
+
+def convert_uploaded_image(uploaded_file):
+    if uploaded_file is not None:
+    # 3. Open image with PIL
+        file_image = Image.open(uploaded_file)
+        return np.array(file_image)
+    else:
+        return(None)
 
 @st.cache_resource(show_spinner="Loading Paddle OCR")
 def load_paddle():
-    PaddleOCR(lang='en', use_angle_cls=True, ocr_version="PP-OCRv4")
+    return PaddleOCR(lang='en', use_angle_cls=True, ocr_version="PP-OCRv4")
 
 def get_text_from_image(image_path):
     ocr = load_paddle()
@@ -52,19 +60,19 @@ def get_text_from_image(image_path):
     return text_dict, full_text
 
 
-def main(mode,product,data):
-    if mode == 'Use Sample Data':
-        if product == 'distilled spirits':
-            label_front_path = 'label images/Distilled_Spirits_TTB_Ex_Front.png'
-            label_back_path = 'label images/Distilled_Spirits_TTB_Ex_Back.png'
-        elif product == 'wine':
-            label_front_path = 'label images/Wine_TTB_Ex_Front.png'
-            label_back_path = 'label images/Wine_TTB_Ex_Back.png'
+def main(mode,product,requirements_dict, label_front_path, label_back_path):
+    # if mode == 'Use Sample Data':
+    #     if product == 'distilled spirits':
+    #         label_front_path = 'label images/Distilled_Spirits_TTB_Ex_Front.png'
+    #         label_back_path = 'label images/Distilled_Spirits_TTB_Ex_Back.png'
+    #     elif product == 'wine':
+    #         label_front_path = 'label images/Wine_TTB_Ex_Front.png'
+    #         label_back_path = 'label images/Wine_TTB_Ex_Back.png'
 
-    requirements_dict = build_requirements_dict(product,data)
+    # requirements_dict = build_requirements_dict(product,data)
     print('--- Label Front Text RESULT START ---')
     front_text,full_front_text = get_text_from_image(label_front_path)
-    print(front_text)
+    print(full_front_text)
     front_lower = {k.lower():v for k,v in front_text.items()}
     print('--- Label Front Text RESULT END ---')
 
@@ -76,12 +84,16 @@ def main(mode,product,data):
 
     for key,value in requirements_dict.items():
         print(f"{key}: {requirements_dict[key]}")
-        if value[0].lower() in front_lower.keys():
-            print(f"{key} found in front text with confidence {front_lower[value[0].lower()]}.")
-            requirements_dict[key].append(f"{key} ({value[0]}) found in front text with confidence {front_lower[value[0].lower()]}.")
-        elif value[0].lower() in back_lower.keys():
-            print(f"{key} found in back text with confidence {back_lower[value[0].lower()]}.")
-            requirements_dict[key].append(f"{key} ({value[0]}) found in back text with confidence {back_lower[value[0].lower()]}.")
+        if value[0].lower() in full_front_text.lower():
+            score = text_fixing.is_paragraph_in_image(value[0].lower(), full_front_text)
+            print(f"Fuzzy match score for front text: {score[1]}. Meets threshold: {score[0]}.")
+            requirements_dict[key].append(f"{key} ({value[0]}) found in front text with fuzzy match score {score[1]}. Meets threshold: {score[0]}.")
+            # print(f"{key} found in front text with confidence {front_lower[value[0].lower()]}.")
+            # requirements_dict[key].append(f"{key} ({value[0]}) found in front text with confidence {front_lower[value[0].lower()]}.")
+        elif value[0].lower() in full_back_text.lower():
+            score = text_fixing.is_paragraph_in_image(value[0].lower(), full_back_text)
+            print(f"Fuzzy match score for front text: {score[1]}. Meets threshold: {score[0]}.")
+            requirements_dict[key].append(f"{key} ({value[0]}) found in back text with fuzzy match score {score[1]}. Meets threshold: {score[0]}.")
         else:
             print(f"{key} not found in either front or back text.")
             requirements_dict[key].append(f"{key} ({value[0]}) not found in either front or back text.")
@@ -101,13 +113,3 @@ def main(mode,product,data):
         requirements_dict['GOVERNMENT WARNING'] = ['GOVERNMENT WARNING',"GOVERNMENT WARNING not found in either front or back text."]
 
     return requirements_dict
-
-if __name__ == "__main__":
-    try:
-        main(mode=st.session_state.mode,product=st.session_state.product,data=pd.read_csv(sample_file))
-    except KeyboardInterrupt as k:
-        stderr.write("ok, bye\n")
-        exit(1)
-    except Exception as e:
-        stderr.write(f"Error: {e}")
-        exit(1)
