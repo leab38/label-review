@@ -37,8 +37,12 @@ def build_requirements_dict(product,data):
     print(requirements_dict)
     return requirements_dict
 
+@st.cache_resource(show_spinner="Loading Paddle OCR")
+def load_paddle():
+    PaddleOCR(lang='en', use_angle_cls=True, ocr_version="PP-OCRv4")
+
 def get_text_from_image(image_path):
-    ocr = PaddleOCR(lang='en', use_angle_cls=True, ocr_version="PP-OCRv4")
+    ocr = load_paddle()
     result = ocr.predict(image_path)
     text_dict = {}
     for item in result:
