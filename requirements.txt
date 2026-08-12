@@ -41,7 +41,7 @@ numpy==2.3.5
 opencv-python-headless
 opt-einsum==3.3.0
 packaging==26.3
-paddleocr==3.3.3
+paddleocr==3.3.3 --no-deps
 paddlepaddle==3.2.0
 paddlex==3.3.13
 prettytable==3.18.0
