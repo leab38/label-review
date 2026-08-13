@@ -11,7 +11,7 @@ sample_file = 'label images/sample_label_form.csv'
 st.title("Label Review")
 st.write("Upload your label and label form and start the verification process.")
 
-st.write("st.session_state object:", st.session_state)
+# st.write("st.session_state object:", st.session_state)
 st.session_state.verification = False
 st.session_state.requirements_dict = {}
 
@@ -76,23 +76,40 @@ if mode == 'Use Sample Data':
 
 # Add a button to start the verification process
 if st.button("Start Verification"):
-    st.write("Verification process started...")
+    try:
+        st.write("Verification process started...")
 
-    st.session_state.front_image = label_front_path
-    st.session_state.back_image = label_back_path
+        if label_front_path is not None:
+            st.session_state.front_image = label_front_path
+        else: 
+            st.write('Upload a front image.')
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.image(front_image, caption="Label Front")
-    with col2:
-        st.image(back_image, caption="Label Back")
+        if label_back_path is not None:
+            st.session_state.back_image = label_back_path
+        else:
+            st.write('Upload a back image.')
 
-    verification_dict = read_form_paddleocr.main(st.session_state.mode,st.session_state.product,st.session_state.requirements_dict, label_front_path, label_back_path)
-    st.session_state.verification = True
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(front_image, caption="Label Front")
+        with col2:
+            st.image(back_image, caption="Label Back")
 
-    st.write("Verification Results:")
-    for key, value in verification_dict.items():
-        st.write(value[-1])
+        verification_dict = read_form_paddleocr.main(st.session_state.mode,st.session_state.product,st.session_state.requirements_dict, label_front_path, label_back_path)
+        st.session_state.verification = True
 
-if st.session_state.verification == True:
-    print(verification_dict)
+        st.write("Verification Results:")
+        for key, value in verification_dict.items():
+            st.write(value[-1])
+
+    except NameError as n:
+        st.write('You\'ve forgotten one of the steps...')
+        # st.write(n.args)
+        if 'label_front_path' in n.args[0]:
+            st.write('Upload a front image before pressing Start Verification.')
+        if 'label_back_path' in n.args[0]:
+            st.write('Upload a back image before pressing Start Verification.')
+
+    finally:
+        if st.session_state.verification == True:
+            print(verification_dict)
