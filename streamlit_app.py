@@ -37,7 +37,7 @@ if mode == "Upload Files":
             st.write("Label Information")
             brand_name = st.text_input('Brand Name')
             fanciful = st.text_input('Fanciful Name')
-            company_name = st.text_input('Name')
+            company_name = st.text_input('Company Name')
             address = st.text_input('Address')
             if product.lower() == 'wine':
                 varietal = st.text_input('Grape Varietal')
