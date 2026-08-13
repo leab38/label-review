@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from io import StringIO
+from io import BytesIO
 from paddleocr import PaddleOCR
 from PIL import Image
 import numpy as np
@@ -9,7 +9,8 @@ import read_form_paddleocr
 def convert_uploaded_image(uploaded_file):
     if uploaded_file is not None:
     # 3. Open image with PIL
-        file_image = Image.open(uploaded_file)
+        imagefile = BytesIO(uploaded_file.read())
+        file_image = Image.open(imagefile)
         return np.array(file_image)
 
 sample_file = 'label images/sample_label_form.csv'
