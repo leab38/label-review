@@ -87,13 +87,13 @@ def main(mode,product,requirements_dict, label_front_path, label_back_path):
 
     for key,value in requirements_dict.items():
         print(f"{key}: {requirements_dict[key]}")
-        if value[0].lower() in full_front_text.lower():
+        if (value[0].lower() in full_front_text.lower()) or (value[0].lower().replace(' ','') in full_front_text.lower()):
             score = text_fixing.is_paragraph_in_image(value[0].lower(), full_front_text)
             print(f"Fuzzy match score for front text: {score[1]}. Meets threshold: {score[0]}.")
             requirements_dict[key].append(f"{key} ({value[0]}) found in front text with fuzzy match score {score[1]}. Meets threshold: {score[0]}.")
             # print(f"{key} found in front text with confidence {front_lower[value[0].lower()]}.")
             # requirements_dict[key].append(f"{key} ({value[0]}) found in front text with confidence {front_lower[value[0].lower()]}.")
-        elif value[0].lower() in full_back_text.lower():
+        elif (value[0].lower() in full_back_text.lower()) or (value[0].lower().replace(' ','') in full_back_text.lower()):
             score = text_fixing.is_paragraph_in_image(value[0].lower(), full_back_text)
             print(f"Fuzzy match score for front text: {score[1]}. Meets threshold: {score[0]}.")
             requirements_dict[key].append(f"{key} ({value[0]}) found in back text with fuzzy match score {score[1]}. Meets threshold: {score[0]}.")
