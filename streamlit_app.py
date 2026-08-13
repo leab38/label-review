@@ -6,13 +6,6 @@ from PIL import Image
 import numpy as np
 import read_form_paddleocr
 
-def convert_uploaded_image(uploaded_file):
-    if uploaded_file is not None:
-    # 3. Open image with PIL
-        imagefile = BytesIO(uploaded_file.read())
-        file_image = Image.open(imagefile)
-        return np.array(file_image)
-
 sample_file = 'label images/sample_label_form.csv'
 
 st.title("Label Review")
@@ -49,14 +42,16 @@ if mode == "Upload Files":
     label_front = st.file_uploader("Upload Label Front", type=["png", "jpg", "jpeg", "webp"])
     if label_front is not None:
         st.write("Label Front Uploaded")
-        front_image = Image.open(label_front)
-        label_front_path = convert_uploaded_image(front_image)
+        front_imagefile = BytesIO(label_front.read())
+        front_image = Image.open(front_imagefile)
+        label_front_path = np.array(front_image)
 
     label_back = st.file_uploader("Upload Label Back", type=["png", "jpg", "jpeg", "webp"])
     if label_back is not None:
         st.write("Label Back Uploaded")
-        back_image = Image.open(label_back)
-        label_back_path = convert_uploaded_image(label_back)
+        back_imagefile = BytesIO(label_back.read())
+        back_image = Image.open(back_imagefile)
+        label_back_path = np.array(back_image)
 
 if mode == 'Use Sample Data':
     # Display the data in a table
