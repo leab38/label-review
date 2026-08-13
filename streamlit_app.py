@@ -7,8 +7,12 @@ import numpy as np
 import read_form_paddleocr
 
 sample_file = 'label images/sample_label_form.csv'
+st.title('Label Review')
+st.header("Introduction")
+st.write("This page is a proof of concept for improving the TTB Label Review process. This is an initial iteration, which moves away from a manual list on a user's desktop to a checklist embedded within the app and optical character recognition on the labels to help speed up the review process.")
+st.write("GitHub repository can be found at https://github.com/leab38/label-review.")
 
-st.title("Label Review")
+st.header("Verification Process")
 st.write("Upload your label and label form and start the verification process.")
 
 # st.write("st.session_state object:", st.session_state)
@@ -110,7 +114,7 @@ if st.button("Start Verification"):
         verification_dict = read_form_paddleocr.main(st.session_state.mode,st.session_state.product,st.session_state.requirements_dict, label_front_path, label_back_path)
         st.session_state.verification = True
 
-        st.write("Verification Results:")
+        st.write("Label Checklist with Text Recognition Results:")
         for key, value in verification_dict.items():
             st.write(value[-1])
 
@@ -125,3 +129,5 @@ if st.button("Start Verification"):
     finally:
         if st.session_state.verification == True:
             print(verification_dict)
+
+
