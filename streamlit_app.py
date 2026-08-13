@@ -3,8 +3,15 @@ import pandas as pd
 from io import StringIO
 from paddleocr import PaddleOCR
 from PIL import Image
-
+import numpy as np
 import read_form_paddleocr
+
+def convert_uploaded_image(uploaded_file):
+    if uploaded_file is not None:
+    # 3. Open image with PIL
+        file_image = Image.open(uploaded_file)
+        return np.array(file_image)
+
 sample_file = 'label images/sample_label_form.csv'
 
 st.title("Label Review")
@@ -18,17 +25,6 @@ mode = st.radio("Select Mode", ("Upload Files", "Use Sample Data"),key="mode")
 
 options = ["wine", "distilled spirits", "malt beverages"]
 product = st.selectbox("Select Product Type", options,key="product")
-
-#default images
-if product == 'distilled spirits':
-    label_front_path = 'label images/Distilled_Spirits_TTB_Ex_Front.png'
-    label_back_path = 'label images/Distilled_Spirits_TTB_Ex_Back.png'
-elif product == 'wine':
-    label_front_path = 'label images/Wine_TTB_Ex_Front.png'
-    label_back_path = 'label images/Wine_TTB_Ex_Back.png'
-elif product == 'malt beverages':
-    label_front_path = 'label images/Malt_TTB_Ex_Front.png'
-    label_back_path = 'label images/Malt_TTB_Ex_Back.png'
 
 #file upload
 
@@ -53,13 +49,13 @@ if mode == "Upload Files":
     if label_front is not None:
         st.write("Label Front Uploaded")
         front_image = Image.open(label_front)
-        label_front_path = read_form_paddleocr.convert_uploaded_image(label_front)
+        label_front_path = convert_uploaded_image(front_image)
 
     label_back = st.file_uploader("Upload Label Back", type=["png", "jpg", "jpeg", "webp"])
     if label_back is not None:
         st.write("Label Back Uploaded")
         back_image = Image.open(label_back)
-        label_back_path = read_form_paddleocr.convert_uploaded_image(label_back)
+        label_back_path = convert_uploaded_image(label_back)
 
 if mode == 'Use Sample Data':
     # Display the data in a table
@@ -67,6 +63,18 @@ if mode == 'Use Sample Data':
     st.write("Uploaded Data:")
     st.dataframe(data[data['TYPE_OF_PRODUCT'].str.lower() == product.lower()].replace({pd.NA: ''}))
     st.session_state.requirements_dict = read_form_paddleocr.build_requirements_dict(product,data)
+
+    #default images
+    if product == 'distilled spirits':
+        label_front_path = 'label images/Distilled_Spirits_TTB_Ex_Front.png'
+        label_back_path = 'label images/Distilled_Spirits_TTB_Ex_Back.png'
+    elif product == 'wine':
+        label_front_path = 'label images/Wine_TTB_Ex_Front.png'
+        label_back_path = 'label images/Wine_TTB_Ex_Back.png'
+    elif product == 'malt beverages':
+        label_front_path = 'label images/Malt_TTB_Ex_Front.png'
+        label_back_path = 'label images/Malt_TTB_Ex_Back.png'
+
     front_image = Image.open(label_front_path)
     back_image = Image.open(label_back_path)
 
