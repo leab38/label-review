@@ -14,6 +14,11 @@ st.write("Upload your label and label form and start the verification process.")
 # st.write("st.session_state object:", st.session_state)
 st.session_state.verification = False
 st.session_state.requirements_dict = {}
+st.session_state.hide_form = False
+
+# def toggle_form(form):
+#     form.submit()
+#     st.session_state.hide_form = True
 
 mode = st.radio("Select Mode", ("Upload Files", "Use Sample Data"),key="mode")
 
@@ -23,21 +28,28 @@ product = st.selectbox("Select Product Type", options,key="product")
 #file upload
 
 if mode == "Upload Files":
-    with st.form("label information"):
-        st.write("Label Information")
-        brand_name = st.text_input('Brand Name')
-        fanciful = st.text_input('Fanciful Name')
-        company_name = st.text_input('Name')
-        address = st.text_input('Address')
-        if product.lower() == 'wine':
-            varietal = st.text_input('Grape Varietal')
-            appellation = st.text_input('Wine Appellation')
-        submit = st.form_submit_button('Save Label Information')
+    with st.expander('Form',expanded = not st.session_state.hide_form):
+        with st.form("label information"):
+            st.write("Label Information")
+            brand_name = st.text_input('Brand Name')
+            fanciful = st.text_input('Fanciful Name')
+            company_name = st.text_input('Name')
+            address = st.text_input('Address')
+            if product.lower() == 'wine':
+                varietal = st.text_input('Grape Varietal')
+                appellation = st.text_input('Wine Appellation')
+            st.session_state.hide_form = st.form_submit_button('Save Label Information')
 
     if product.lower() == 'wine':
         st.session_state.requirements_dict= {'BRAND NAME':[brand_name],'FANCIFUL NAME': [fanciful],'NAME':[company_name],'ADDRESS':[address],'GRAPE_VARIETAL':[varietal],'WINE_APPELLATION':[appellation]}
     else:
         st.session_state.requirements_dict= {'BRAND NAME':[brand_name],'FANCIFUL NAME': [fanciful],'NAME':[company_name],'ADDRESS':[address]}
+
+    with st.expander('Form Details',st.session_state.hide_form):
+        if st.session_state.hide_form:
+            st.write(pd.DataFrame(st.session_state.requirements_dict.items()))
+        else:
+            st.write('Nothing to see here!')
         
     label_front = st.file_uploader("Upload Label Front", type=["png", "jpg", "jpeg", "webp"])
     if label_front is not None:
