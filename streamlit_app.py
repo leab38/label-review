@@ -17,7 +17,7 @@ sample_file = 'label images/sample_label_form.csv'
 st.title("Label Review")
 st.write("Upload your label and label form and start the verification process.")
 
-# st.write("st.session_state object:", st.session_state)
+st.write("st.session_state object:", st.session_state)
 st.session_state.verification = False
 st.session_state.requirements_dict = {}
 
