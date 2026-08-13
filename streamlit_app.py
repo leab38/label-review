@@ -39,15 +39,19 @@ if mode == "Upload Files":
             fanciful = st.text_input('Fanciful Name')
             company_name = st.text_input('Company Name')
             address = st.text_input('Address')
+            class_type = st.text_input('Class/Type')
+            content = st.text_input('Alcohol Content')
+            net_contents = st.text_input('Net Contents')
             if product.lower() == 'wine':
                 varietal = st.text_input('Grape Varietal')
                 appellation = st.text_input('Wine Appellation')
             st.session_state.hide_form = st.form_submit_button('Save Label Information')
 
+    st.session_state.requirements_dict= {'BRAND NAME':[brand_name],'FANCIFUL NAME': [fanciful],'NAME':[company_name],'ADDRESS':[address],'CLASS_TYPE':[class_type],'CONTENT':[content],'NET_CONTENT':[net_contents]}
+
     if product.lower() == 'wine':
-        st.session_state.requirements_dict= {'BRAND NAME':[brand_name],'FANCIFUL NAME': [fanciful],'NAME':[company_name],'ADDRESS':[address],'GRAPE_VARIETAL':[varietal],'WINE_APPELLATION':[appellation]}
-    else:
-        st.session_state.requirements_dict= {'BRAND NAME':[brand_name],'FANCIFUL NAME': [fanciful],'NAME':[company_name],'ADDRESS':[address]}
+        st.session_state.requirements_dict['GRAPE_VARIETAL']=[varietal]
+        st.session_state.requirements_dict['WINE_APPELLATION']=[appellation]
 
     with st.expander('Form Details',st.session_state.hide_form):
         if st.session_state.hide_form:

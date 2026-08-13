@@ -26,7 +26,10 @@ def build_requirements_dict(product,data):
     requirements_dict = {'BRAND_NAME':[requirements_df.iloc[0]['BRAND_NAME']]
                                 ,'FANCIFUL_NAME':[requirements_df.iloc[0]['FANCIFUL_NAME']]
                                 ,'NAME':[requirements_df.iloc[0]['NAME_AND_ADDRESS'].split('\n')[0]]
-                                ,'ADDRESS':[requirements_df.iloc[0]['NAME_AND_ADDRESS'].split('\n')[1]]}
+                                ,'ADDRESS':[requirements_df.iloc[0]['NAME_AND_ADDRESS'].split('\n')[1]]
+                                ,'CLASS_TYPE':[requirements_df.iloc[0]['CLASS_TYPE']]
+                                ,'CONTENT':[requirements_df.iloc[0]['CONTENT']]
+                                ,'NET_CONTENT':[requirements_df.iloc[0]['NET_CONTENT']]}
 
     
     if product.lower() == 'wine':
