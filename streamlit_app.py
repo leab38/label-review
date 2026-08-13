@@ -42,15 +42,15 @@ if mode == "Upload Files":
     label_front = st.file_uploader("Upload Label Front", type=["png", "jpg", "jpeg", "webp"])
     if label_front is not None:
         st.write("Label Front Uploaded")
-        front_imagefile = BytesIO(label_front.read())
-        front_image = Image.open(front_imagefile)
+        # front_imagefile = BytesIO(label_front.read())
+        front_image = Image.open(label_front).convert('RGB')
         label_front_path = np.array(front_image)
 
     label_back = st.file_uploader("Upload Label Back", type=["png", "jpg", "jpeg", "webp"])
     if label_back is not None:
         st.write("Label Back Uploaded")
-        back_imagefile = BytesIO(label_back.read())
-        back_image = Image.open(back_imagefile)
+        # back_imagefile = BytesIO(label_back.read())
+        back_image = Image.open(label_back).convert('RGB')
         label_back_path = np.array(back_image)
 
 if mode == 'Use Sample Data':
